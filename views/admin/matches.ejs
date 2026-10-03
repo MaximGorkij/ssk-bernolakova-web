@@ -43,6 +43,7 @@
           <td><span class="badge <%= m.status === 'finished' ? 'badge-finished' : 'badge-upcoming' %>"><%= m.status === 'finished' ? 'ODOHRANÝ' : 'NADCHÁDZAJÚCI' %></span></td>
           <td><%= m.status === 'finished' ? (m.homeScore + ' : ' + m.awayScore) : '—' %></td>
           <td class="row-actions">
+            <a class="btn btn-secondary" href="/admin/matches/<%= m.id %>/edit" style="margin-top:0;padding:6px 10px;font-size:11px">Upraviť</a>
             <form method="POST" action="/admin/matches/<%= m.id %>/delete" onsubmit="return confirm('Naozaj odstrániť tento zápas?')">
               <button class="btn btn-danger" type="submit" style="margin-top:0;padding:6px 10px;font-size:11px">Zmazať</button>
             </form>

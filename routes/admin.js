@@ -14,6 +14,19 @@ function nextId(collectionName) {
   return items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
 }
 
+function str(v) {
+  return (v === undefined || v === null ? '' : String(v)).trim();
+}
+
+function toScore(v) {
+  const n = parseInt(v, 10);
+  return Number.isNaN(n) || n < 0 ? 0 : n;
+}
+
+function findTeam(id) {
+  return db.get('teams').find({ id: parseInt(id, 10) });
+}
+
 // ---------- LOGIN / LOGOUT ----------
 
 router.get('/login', (req, res) => {
@@ -87,13 +100,74 @@ router.get('/teams', requireAuth, (req, res) => {
 
 router.post('/teams', requireAuth, (req, res) => {
   const { name, ageRange, photo } = req.body;
-  db.get('teams').push({ id: nextId('teams'), name, ageRange, photo }).write();
+  db.get('teams').push({
+    id: nextId('teams'),
+    name: str(name),
+    ageRange: str(ageRange),
+    photo: str(photo),
+    coach: '',
+    members: []
+  }).write();
   res.redirect('/admin/teams');
+});
+
+router.get('/teams/:id/edit', requireAuth, (req, res) => {
+  const team = findTeam(req.params.id).value();
+  if (!team) return res.redirect('/admin/teams');
+  res.render('admin/team-edit', { team, members: team.members || [], saved: req.query.saved });
+});
+
+router.post('/teams/:id', requireAuth, (req, res) => {
+  const team = findTeam(req.params.id);
+  if (!team.value()) return res.redirect('/admin/teams');
+  const { name, ageRange, photo, coach } = req.body;
+  team.assign({ name: str(name), ageRange: str(ageRange), photo: str(photo), coach: str(coach) }).write();
+  res.redirect(`/admin/teams/${req.params.id}/edit?saved=1`);
 });
 
 router.post('/teams/:id/delete', requireAuth, (req, res) => {
   db.get('teams').remove({ id: parseInt(req.params.id, 10) }).write();
   res.redirect('/admin/teams');
+});
+
+// ---------- CLENOVIA DRUZSTVA ----------
+
+router.post('/teams/:id/members', requireAuth, (req, res) => {
+  const team = findTeam(req.params.id);
+  const t = team.value();
+  if (!t) return res.redirect('/admin/teams');
+  const members = (t.members || []).slice();
+  const name = str(req.body.name);
+  if (name) {
+    const id = members.length ? Math.max(...members.map((m) => m.id)) + 1 : 1;
+    members.push({ id, name, number: str(req.body.number), position: str(req.body.position) });
+    team.assign({ members }).write();
+  }
+  res.redirect(`/admin/teams/${req.params.id}/edit?saved=1`);
+});
+
+router.post('/teams/:id/members/:mid', requireAuth, (req, res) => {
+  const team = findTeam(req.params.id);
+  const t = team.value();
+  if (!t) return res.redirect('/admin/teams');
+  const mid = parseInt(req.params.mid, 10);
+  const name = str(req.body.name);
+  const members = (t.members || []).map((m) => (
+    m.id === mid && name
+      ? { id: m.id, name, number: str(req.body.number), position: str(req.body.position) }
+      : m
+  ));
+  team.assign({ members }).write();
+  res.redirect(`/admin/teams/${req.params.id}/edit?saved=1`);
+});
+
+router.post('/teams/:id/members/:mid/delete', requireAuth, (req, res) => {
+  const team = findTeam(req.params.id);
+  const t = team.value();
+  if (!t) return res.redirect('/admin/teams');
+  const mid = parseInt(req.params.mid, 10);
+  team.assign({ members: (t.members || []).filter((m) => m.id !== mid) }).write();
+  res.redirect(`/admin/teams/${req.params.id}/edit?saved=1`);
 });
 
 // ---------- ZAPASY / VYSLEDKY ----------
@@ -104,12 +178,33 @@ router.get('/matches', requireAuth, (req, res) => {
 
 router.post('/matches', requireAuth, (req, res) => {
   const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore } = req.body;
+  const finished = status === 'finished';
   db.get('matches').push({
     id: nextId('matches'),
-    homeTeam, awayTeam, date, time: time || '', location: location || '',
-    status: status === 'finished' ? 'finished' : 'upcoming',
-    homeScore: status === 'finished' ? parseInt(homeScore, 10) : null,
-    awayScore: status === 'finished' ? parseInt(awayScore, 10) : null
+    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location),
+    status: finished ? 'finished' : 'upcoming',
+    homeScore: finished ? toScore(homeScore) : null,
+    awayScore: finished ? toScore(awayScore) : null
+  }).write();
+  res.redirect('/admin/matches');
+});
+
+router.get('/matches/:id/edit', requireAuth, (req, res) => {
+  const match = db.get('matches').find({ id: parseInt(req.params.id, 10) }).value();
+  if (!match) return res.redirect('/admin/matches');
+  res.render('admin/match-edit', { match });
+});
+
+router.post('/matches/:id', requireAuth, (req, res) => {
+  const match = db.get('matches').find({ id: parseInt(req.params.id, 10) });
+  if (!match.value()) return res.redirect('/admin/matches');
+  const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore } = req.body;
+  const finished = status === 'finished';
+  match.assign({
+    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location),
+    status: finished ? 'finished' : 'upcoming',
+    homeScore: finished ? toScore(homeScore) : null,
+    awayScore: finished ? toScore(awayScore) : null
   }).write();
   res.redirect('/admin/matches');
 });

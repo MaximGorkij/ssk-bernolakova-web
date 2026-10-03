@@ -1,0 +1,64 @@
+<%- include('_head', { title: 'Upraviť družstvo' }) %>
+<%- include('_nav') %>
+<div class="wrap">
+  <p style="margin:0 0 10px"><a href="/admin/teams" style="color:#0b3778;font-weight:700;font-size:13px">← Späť na družstvá</a></p>
+  <h1>Družstvo: <%= team.name %></h1>
+  <% if (saved) { %><div class="alert-ok">Uložené.</div><% } %>
+
+  <div class="card">
+    <h3 style="margin-top:0">Údaje o družstve</h3>
+    <form method="POST" action="/admin/teams/<%= team.id %>">
+      <div class="grid-2">
+        <div><label>Názov</label><input type="text" name="name" value="<%= team.name %>" required></div>
+        <div><label>Veková kategória</label><input type="text" name="ageRange" value="<%= team.ageRange %>" required></div>
+      </div>
+      <div class="grid-2">
+        <div><label>Tréner / trénerka</label><input type="text" name="coach" value="<%= team.coach || '' %>"></div>
+        <div><label>URL fotky</label><input type="url" name="photo" value="<%= team.photo %>" required></div>
+      </div>
+      <button class="btn" type="submit">Uložiť údaje</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Pridať člena</h3>
+    <form method="POST" action="/admin/teams/<%= team.id %>/members">
+      <div class="grid-2">
+        <div><label>Meno a priezvisko</label><input type="text" name="name" required></div>
+        <div><label>Číslo dresu (voliteľné)</label><input type="text" name="number" maxlength="3"></div>
+      </div>
+      <label>Post / funkcia (voliteľné)</label>
+      <input type="text" name="position" placeholder="napr. brankárka, krídlo, pivot, asistent trénera">
+      <button class="btn" type="submit">Pridať člena</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Členovia (<%= members.length %>)</h3>
+    <% if (!members.length) { %>
+      <p style="color:#68758a;font-size:13px">Družstvo zatiaľ nemá žiadnych členov.</p>
+    <% } else { %>
+    <table>
+      <thead><tr><th>Meno</th><th style="width:90px">Číslo</th><th>Post / funkcia</th><th></th></tr></thead>
+      <tbody>
+        <% members.forEach(function(m) { %>
+        <tr>
+          <td><input type="text" name="name" form="mf-<%= m.id %>" value="<%= m.name %>" required></td>
+          <td><input type="text" name="number" form="mf-<%= m.id %>" value="<%= m.number || '' %>" maxlength="3"></td>
+          <td><input type="text" name="position" form="mf-<%= m.id %>" value="<%= m.position || '' %>"></td>
+          <td class="row-actions" style="white-space:nowrap">
+            <form id="mf-<%= m.id %>" method="POST" action="/admin/teams/<%= team.id %>/members/<%= m.id %>"></form>
+            <button class="btn" type="submit" form="mf-<%= m.id %>" style="margin-top:0;padding:6px 10px;font-size:11px">Uložiť</button>
+            <form method="POST" action="/admin/teams/<%= team.id %>/members/<%= m.id %>/delete" onsubmit="return confirm('Odstrániť tohto člena z družstva?')">
+              <button class="btn btn-danger" type="submit" style="margin-top:0;padding:6px 10px;font-size:11px">Zmazať</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+</div>
+</body>
+</html>

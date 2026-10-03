@@ -18,15 +18,18 @@
 
   <div class="card">
     <table>
-      <thead><tr><th>Foto</th><th>Názov</th><th>Kategória</th><th></th></tr></thead>
+      <thead><tr><th>Foto</th><th>Názov</th><th>Kategória</th><th>Tréner</th><th>Členov</th><th></th></tr></thead>
       <tbody>
         <% teams.forEach(function(t) { %>
         <tr>
           <td><img class="thumb" src="<%= t.photo %>" alt=""></td>
           <td><%= t.name %></td>
           <td><%= t.ageRange %></td>
+          <td><%= t.coach || '—' %></td>
+          <td><%= (t.members || []).length %></td>
           <td class="row-actions">
-            <form method="POST" action="/admin/teams/<%= t.id %>/delete" onsubmit="return confirm('Naozaj odstrániť toto družstvo?')">
+            <a class="btn btn-secondary" href="/admin/teams/<%= t.id %>/edit" style="margin-top:0;padding:6px 10px;font-size:11px">Upraviť / členovia</a>
+            <form method="POST" action="/admin/teams/<%= t.id %>/delete" onsubmit="return confirm('Naozaj odstrániť toto družstvo vrátane všetkých členov?')">
               <button class="btn btn-danger" type="submit" style="margin-top:0;padding:6px 10px;font-size:11px">Zmazať</button>
             </form>
           </td>

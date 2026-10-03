@@ -1,0 +1,37 @@
+<%- include('_head', { title: 'Upraviť zápas' }) %>
+<%- include('_nav') %>
+<div class="wrap">
+  <p style="margin:0 0 10px"><a href="/admin/matches" style="color:#0b3778;font-weight:700;font-size:13px">← Späť na zápasy</a></p>
+  <h1>Upraviť zápas</h1>
+
+  <div class="card">
+    <form method="POST" action="/admin/matches/<%= match.id %>">
+      <div class="grid-2">
+        <div><label>Domáci tím</label><input type="text" name="homeTeam" value="<%= match.homeTeam %>" required></div>
+        <div><label>Hosťujúci tím</label><input type="text" name="awayTeam" value="<%= match.awayTeam %>" required></div>
+      </div>
+      <div class="grid-2">
+        <div><label>Dátum</label><input type="date" name="date" value="<%= match.date %>" required></div>
+        <div><label>Čas (voliteľné)</label><input type="time" name="time" value="<%= match.time || '' %>"></div>
+      </div>
+      <label>Miesto (voliteľné)</label>
+      <input type="text" name="location" value="<%= match.location || '' %>">
+
+      <label>Stav</label>
+      <select name="status" onchange="document.getElementById('scoreFields').style.display = this.value === 'finished' ? 'grid' : 'none'">
+        <option value="upcoming" <%= match.status !== 'finished' ? 'selected' : '' %>>Nadchádzajúci</option>
+        <option value="finished" <%= match.status === 'finished' ? 'selected' : '' %>>Odohraný (so skóre)</option>
+      </select>
+
+      <div class="grid-2" id="scoreFields" style="display:<%= match.status === 'finished' ? 'grid' : 'none' %>">
+        <div><label>Skóre – domáci</label><input type="number" name="homeScore" min="0" value="<%= match.homeScore === null || match.homeScore === undefined ? '' : match.homeScore %>"></div>
+        <div><label>Skóre – hostia</label><input type="number" name="awayScore" min="0" value="<%= match.awayScore === null || match.awayScore === undefined ? '' : match.awayScore %>"></div>
+      </div>
+
+      <button class="btn" type="submit">Uložiť zmeny</button>
+      <a class="btn btn-secondary" href="/admin/matches">Zrušiť</a>
+    </form>
+  </div>
+</div>
+</body>
+</html>

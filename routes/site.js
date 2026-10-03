@@ -50,4 +50,22 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/druzstvo/:id', (req, res) => {
+  const club = db.get('club').value();
+  const team = db.get('teams').find({ id: parseInt(req.params.id, 10) }).value();
+  if (!team) {
+    return res.status(404).send('404 - Druzstvo nenajdene');
+  }
+  const members = (team.members || []).slice().sort((a, b) => {
+    const an = parseInt(a.number, 10);
+    const bn = parseInt(b.number, 10);
+    const aHas = !Number.isNaN(an);
+    const bHas = !Number.isNaN(bn);
+    if (aHas && bHas && an !== bn) return an - bn;
+    if (aHas !== bHas) return aHas ? -1 : 1;
+    return a.name.localeCompare(b.name, 'sk');
+  });
+  res.render('team', { club, team, members });
+});
+
 module.exports = router;
