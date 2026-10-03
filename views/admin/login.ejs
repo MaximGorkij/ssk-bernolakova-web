@@ -1,0 +1,16 @@
+<%- include('_head', { title: 'Prihlásenie' }) %>
+<div class="wrap" style="max-width:400px;margin-top:80px">
+  <div class="card">
+    <h1>Prihlásenie do administrácie</h1>
+    <% if (error) { %><div class="alert-error"><%= error %></div><% } %>
+    <form method="POST" action="/admin/login">
+      <label>Používateľské meno</label>
+      <input type="text" name="username" required autofocus>
+      <label>Heslo</label>
+      <input type="password" name="password" required>
+      <button class="btn" type="submit">Prihlásiť sa</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
