@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= club.name %> – hádzaná</title>
+<meta name="description" content="<%= club.name %> – dievčenská a mládežnícka hádzaná.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="#">
+      <% if (club.logo) { %><img src="<%= club.logo %>" alt="Logo <%= club.name %>"><% } %>
+      <span class="brand-text"><%= club.name.toUpperCase() %><small><%= club.tagline %></small></span>
+    </a>
+    <button class="menu-btn" aria-label="Otvoriť menu" onclick="document.querySelector('nav').classList.toggle('open')">☰</button>
+    <nav>
+      <a href="#klub">O KLUBE</a>
+      <a href="#druzstva">DRUŽSTVÁ</a>
+      <a href="#zapasy">ZÁPASY</a>
+      <a href="#aktuality">AKTUALITY</a>
+      <a href="#galeria">GALÉRIA</a>
+      <a href="#kontakt">KONTAKT</a>
+      <a class="nav-btn" href="#pridaj-sa">PRIDAJ SA K NÁM</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" style="background:linear-gradient(90deg,rgba(4,21,48,.98) 0%,rgba(4,21,48,.91) 43%,rgba(4,21,48,.34) 100%), url('<%= club.heroImage %>') center/cover;">
+  <div class="container hero-content">
+    <% if (club.logo) { %><img class="hero-logo" src="<%= club.logo %>" alt="<%= club.name %>"><% } %>
+    <div class="kicker"><%= club.name.toUpperCase() %></div>
+    <h1><%- nl2br(club.heroTitle) %></h1>
+    <p><%= club.heroText %></p>
+    <div class="buttons">
+      <a class="btn btn-yellow" href="#druzstva">NAŠE DRUŽSTVÁ</a>
+      <a class="btn btn-outline" href="#pridaj-sa">CHCEM SA PRIDAŤ</a>
+    </div>
+  </div>
+</section>
+
+<% if (nextMatch) { %>
+<div class="match-strip">
+  <div class="container match-grid">
+    <div><div class="team-name"><%= nextMatch.homeTeam %></div><div class="match-info">DOMÁCI</div></div>
+    <div class="vs">VS</div>
+    <div><div class="team-name"><%= nextMatch.awayTeam %></div><div class="match-info"><%= parseDate(nextMatch.date) %><% if (nextMatch.time) { %> • <%= nextMatch.time %><% } %><% if (nextMatch.location) { %> • <%= nextMatch.location.toUpperCase() %><% } %></div></div>
+  </div>
+</div>
+<% } %>
+
+<section id="druzstva" class="teams">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="eyebrow">Naše družstvá</div><h2>RASTIEME SPOLU.</h2></div>
+      <p>Od prvých hádzanárskych krokov až po súťažné družstvá. Každá veková kategória má svoje miesto v našom tíme.</p>
+    </div>
+    <div class="team-grid">
+      <% teams.forEach(function(team) { %>
+      <article class="team-card">
+        <div class="team-photo" style="background-image:url('<%= team.photo %>')"></div>
+        <div class="team-body">
+          <h3><%= team.name %></h3>
+          <p><%= team.ageRange %></p>
+          <span class="arrow">POZRIEŤ DRUŽSTVO →</span>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section id="zapasy" class="results">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="eyebrow" style="color:var(--yellow)">Zápasy & výsledky</div><h2>NA IHRISKU.</h2></div>
+      <p style="color:#c7d1e1">Prehľad najbližších zápasov a posledných výsledkov jednotlivých družstiev.</p>
+    </div>
+    <div class="result-grid">
+      <% recentResults.forEach(function(m) { %>
+      <div class="result-card">
+        <div class="result-date"><%= parseDate(m.date) %></div>
+        <div class="score"><%= m.homeScore %> : <%= m.awayScore %></div>
+        <p><%= m.homeTeam %> – <%= m.awayTeam %></p>
+      </div>
+      <% }) %>
+      <% upcomingList.forEach(function(m) { %>
+      <div class="result-card">
+        <div class="result-date"><%= parseDate(m.date) %></div>
+        <div class="score"><%= m.time || '—' %></div>
+        <p>Najbližší zápas</p>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section id="aktuality">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="eyebrow">Zo života klubu</div><h2>AKTUALITY.</h2></div>
+      <p>Turnaje, výsledky, kempy, klubové novinky a všetko dôležité pre hráčky a rodičov.</p>
+    </div>
+    <div class="news-grid">
+      <% news.forEach(function(n) { %>
+      <article class="news-card">
+        <div class="news-img" style="background-image:url('<%= n.image %>')"></div>
+        <div class="news-body">
+          <div class="date"><%= parseDate(n.date) %></div>
+          <h3><%= n.title %></h3>
+          <p><%= n.excerpt %></p>
+          <span class="arrow">ČÍTAŤ VIAC →</span>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section id="klub">
+  <div class="container club">
+    <div class="club-visual" style="background:linear-gradient(135deg,rgba(8,43,99,.88),rgba(8,43,99,.18)), url('<%= club.heroImage %>') center/cover;">
+      <% if (club.logo) { %><img src="<%= club.logo %>" alt="Logo <%= club.name %>"><% } %>
+      <div class="club-badge">ŽLTÁ + MODRÁ<br>JEDEN TÍM.</div>
+    </div>
+    <div class="club-text">
+      <div class="eyebrow">O našom klube</div>
+      <h2><%- nl2br(club.aboutTitle) %></h2>
+      <p><%= club.aboutText %></p>
+      <div class="values">
+        <% club.values.forEach(function(v) { %>
+        <div class="value"><%= v %></div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="galeria" class="gallery">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="eyebrow">Momenty z klubu</div><h2>GALÉRIA.</h2></div>
+      <p>Tréningy, zápasy, turnaje a klubové akcie.</p>
+    </div>
+    <div class="gallery-grid">
+      <% gallery.slice(0,5).forEach(function(g) { %>
+      <div class="gallery-item" style="background-image:url('<%= g.image %>')"></div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section id="pridaj-sa" class="cta">
+  <div class="container">
+    <div class="cta-box">
+      <div><h2>CHCEŠ BYŤ<br>SÚČASŤOU TÍMU?</h2><p>Hľadáte pre svoju dcéru šport, kamarátky a tím, v ktorom bude rásť? Pridajte sa k <%= club.name %>.</p></div>
+      <a class="btn" href="#kontakt">PRIDAŤ SA K NÁM →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="kontakt">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-logo"><%= club.name.toUpperCase() %></div><p><%= club.tagline %></p><p>Spolu na ihrisku. Spolu za tímom.</p></div>
+      <div><h4>KLUB</h4><a href="#klub">O klube</a><a href="#druzstva">Družstvá</a><a href="#aktuality">Aktuality</a></div>
+      <div><h4>PRE HRÁČKY</h4><a href="#zapasy">Zápasy</a><a href="#galeria">Galéria</a><a href="#pridaj-sa">Prihláška</a></div>
+      <div><h4>KONTAKT</h4><p><%= club.contactCity %><br>
+        <% if (club.facebook) { %><a href="<%= club.facebook %>" target="_blank" rel="noopener">Facebook</a><% } %>
+        <% if (club.instagram) { %><a href="<%= club.instagram %>" target="_blank" rel="noopener">Instagram</a><% } %>
+        <%= club.contactEmail %></p></div>
+    </div>
+    <div class="copyright">© <%= new Date().getFullYear() %> <%= club.name %></div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () => document.querySelector('nav').classList.remove('open')));
+</script>
+</body>
+</html>
