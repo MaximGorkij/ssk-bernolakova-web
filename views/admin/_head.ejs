@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – <%= typeof title !== 'undefined' ? title : 'ŠŠK Bernolákova' %></title>
+<style>
+  :root{--blue:#071f46;--blue2:#0b3778;--yellow:#ffc914;--light:#f4f7fb;--dark:#111827;--muted:#68758a;--line:#e4e9f1;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--light);color:var(--dark)}
+  a{color:inherit;text-decoration:none}
+  .admin-header{background:var(--blue);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .admin-header a{color:#fff;font-weight:700}
+  .admin-brand{font-weight:900;letter-spacing:.5px}
+  .admin-nav{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+  .logout-form button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+  .wrap{max-width:960px;margin:30px auto;padding:0 20px 60px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:24px;margin-bottom:24px}
+  h1{font-size:26px;margin-top:0}
+  label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.5px}
+  input[type=text],input[type=password],input[type=date],input[type=time],input[type=number],input[type=email],input[type=url],textarea,select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:7px;font-size:14px;font-family:inherit}
+  textarea{min-height:90px}
+  .btn{display:inline-block;background:var(--blue);color:#fff;border:0;padding:11px 18px;border-radius:7px;font-weight:800;font-size:13px;cursor:pointer;margin-top:14px}
+  .btn-danger{background:#b3261e}
+  .btn-secondary{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .thumb{width:60px;height:44px;object-fit:cover;border-radius:5px;background:#eee}
+  .row-actions form{display:inline}
+  .badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:800}
+  .badge-upcoming{background:#fff4d1;color:#8a6d00}
+  .badge-finished{background:#dcf5e0;color:#136c34}
+  .alert-error{background:#fde8e6;color:#8c1d13;padding:12px 14px;border-radius:8px;margin-bottom:16px;font-size:13px}
+  .alert-ok{background:#dcf5e0;color:#136c34;padding:12px 14px;border-radius:8px;margin-bottom:16px;font-size:13px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:600px){.grid-2{grid-template-columns:1fr}.admin-nav{gap:10px}}
+</style>
+</head>
+<body>
