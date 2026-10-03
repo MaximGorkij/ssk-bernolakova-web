@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= team.name %> – <%= club.name %></title>
+<meta name="description" content="<%= team.name %> – <%= club.name %>">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/team.css">
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="/">
+      <% if (club.logo) { %><img src="<%= club.logo %>" alt="Logo <%= club.name %>"><% } %>
+      <span class="brand-text"><%= club.name.toUpperCase() %><small><%= club.tagline %></small></span>
+    </a>
+    <button class="menu-btn" aria-label="Otvoriť menu" onclick="document.querySelector('nav').classList.toggle('open')">☰</button>
+    <nav>
+      <a href="/#klub">O KLUBE</a>
+      <a href="/#druzstva">DRUŽSTVÁ</a>
+      <a href="/#zapasy">ZÁPASY</a>
+      <a href="/#aktuality">AKTUALITY</a>
+      <a href="/#galeria">GALÉRIA</a>
+      <a href="/#kontakt">KONTAKT</a>
+      <a class="nav-btn" href="/#pridaj-sa">PRIDAJ SA K NÁM</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="page-hero" style="background:linear-gradient(90deg,rgba(4,21,48,.97),rgba(4,21,48,.8)), url('<%= team.photo %>') center/cover;padding:70px 0 60px">
+  <div class="container">
+    <a class="back" href="/#druzstva">← VŠETKY DRUŽSTVÁ</a>
+    <h1><%= team.name %></h1>
+    <p><%= team.ageRange %><% if (team.coach) { %> • Tréner: <%= team.coach %><% } %></p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div><div class="eyebrow">Súpiska</div><h2>ČLENOVIA DRUŽSTVA.</h2></div>
+    </div>
+    <% if (!members.length) { %>
+      <p class="roster-empty">Súpiska družstva sa pripravuje.</p>
+    <% } else { %>
+    <div class="roster-grid">
+      <% members.forEach(function(m) { %>
+      <div class="player-card">
+        <div class="player-number<%= m.number ? '' : ' none' %>"><%= m.number || '–' %></div>
+        <div class="player-name"><%= m.name %></div>
+        <% if (m.position) { %><div class="player-pos"><%= m.position %></div><% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</section>
+</main>
+
+<footer id="kontakt">
+  <div class="container">
+    <div class="footer-grid">
+      <div><div class="footer-logo"><%= club.name.toUpperCase() %></div><p><%= club.tagline %></p><p>Spolu na ihrisku. Spolu za tímom.</p></div>
+      <div><h4>KLUB</h4><a href="/#klub">O klube</a><a href="/#druzstva">Družstvá</a><a href="/#aktuality">Aktuality</a></div>
+      <div><h4>PRE HRÁČKY</h4><a href="/#zapasy">Zápasy</a><a href="/#galeria">Galéria</a><a href="/#pridaj-sa">Prihláška</a></div>
+      <div><h4>KONTAKT</h4><p><%= club.contactCity %><br><%= club.contactEmail %></p></div>
+    </div>
+    <div class="copyright">© <%= new Date().getFullYear() %> <%= club.name %></div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () => document.querySelector('nav').classList.remove('open')));
+</script>
+</body>
+</html>

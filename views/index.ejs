@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><%= club.name %> – hádzaná</title>
-<meta name="description" content="<%= club.name %> – dievčenská a mládežnícka hádzaná.">
+<meta name="description" content="<%= club.name %> – dievčensková a mládežnnícka hádzaná.">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -37,7 +37,7 @@
     <p><%= club.heroText %></p>
     <div class="buttons">
       <a class="btn btn-yellow" href="#druzstva">NAŠE DRUŽSTVÁ</a>
-      <a class="btn btn-outline" href="#pridaj-sa">CHCEM SA PRIDAŤ</a>
+      <a class="btn btn-outline" href="#pridaj-sa">CHCEM SA PRIDAť</a>
     </div>
   </div>
 </section>
@@ -65,7 +65,7 @@
         <div class="team-body">
           <h3><%= team.name %></h3>
           <p><%= team.ageRange %></p>
-          <span class="arrow">POZRIEŤ DRUŽSTVO →</span>
+          <a class="arrow" href="/druzstvo/<%= team.id %>">POZRIEť DRUŽSTVO →</a>
         </div>
       </article>
       <% }) %>
@@ -77,7 +77,7 @@
   <div class="container">
     <div class="section-head">
       <div><div class="eyebrow" style="color:var(--yellow)">Zápasy & výsledky</div><h2>NA IHRISKU.</h2></div>
-      <p style="color:#c7d1e1">Prehľad najbližších zápasov a posledných výsledkov jednotlivých družstiev.</p>
+      <p style="color:#c7d1e1">Prehľad najbližších zápasov a posledných výsledkov jednotlivých družstáv.</p>
     </div>
     <div class="result-grid">
       <% recentResults.forEach(function(m) { %>
@@ -156,8 +156,8 @@
 <section id="pridaj-sa" class="cta">
   <div class="container">
     <div class="cta-box">
-      <div><h2>CHCEŠ BYŤ<br>SÚČASŤOU TÍMU?</h2><p>Hľadáte pre svoju dcéru šport, kamarátky a tím, v ktorom bude rásť? Pridajte sa k <%= club.name %>.</p></div>
-      <a class="btn" href="#kontakt">PRIDAŤ SA K NÁM →</a>
+      <div><h2>CHCEŠ BYť<br>SÚČASťOU TÍMU?</h2><p>Hľadáte pre svoju dcéru šport, kamarátky a tím, v ktorom bude rásť? Pridajte sa k <%= club.name %>.</p></div>
+      <a class="btn" href="#kontakt">PRIDAť SA K NÁM →</a>
     </div>
   </div>
 </section>

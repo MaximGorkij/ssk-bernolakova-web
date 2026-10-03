@@ -1,0 +1,14 @@
+/* TEAM PAGE */
+.page-hero{color:#fff;padding:70px 0 60px;background:linear-gradient(90deg,rgba(4,21,48,.97),rgba(4,21,48,.8)),var(--blue) center/cover}
+.page-hero .back{color:var(--yellow);font-size:12px;font-weight:900;letter-spacing:1px}
+.page-hero h1{font-size:clamp(40px,6vw,66px);letter-spacing:-2px;margin:16px 0 10px}
+.page-hero p{margin:0;color:#c7d1e1;font-size:15px}
+.roster-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.player-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 16px;text-align:center;box-shadow:0 6px 20px rgba(16,24,40,.05)}
+.player-number{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;background:var(--blue);color:var(--yellow);display:grid;place-items:center;font-weight:950;font-size:20px}
+.player-number.none{background:var(--light);color:var(--muted)}
+.player-name{font-weight:900;color:var(--blue);font-size:15px}
+.player-pos{margin-top:5px;color:var(--muted);font-size:12px}
+.roster-empty{color:var(--muted);padding:30px 0}
+@media(max-width:950px){.roster-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.roster-grid{grid-template-columns:1fr}}
