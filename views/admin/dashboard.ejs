@@ -1,0 +1,13 @@
+<%- include('_head', { title: 'Prehľad' }) %>
+<%- include('_nav') %>
+<div class="wrap">
+  <h1>Prehľad obsahu</h1>
+  <div class="grid-2">
+    <div class="card"><h3 style="margin:0">Družstvá</h3><p style="font-size:34px;font-weight:900;margin:8px 0"><%= counts.teams %></p><a class="btn btn-secondary" href="/admin/teams">Spravovať</a></div>
+    <div class="card"><h3 style="margin:0">Zápasy</h3><p style="font-size:34px;font-weight:900;margin:8px 0"><%= counts.matches %></p><a class="btn btn-secondary" href="/admin/matches">Spravovať</a></div>
+    <div class="card"><h3 style="margin:0">Aktuality</h3><p style="font-size:34px;font-weight:900;margin:8px 0"><%= counts.news %></p><a class="btn btn-secondary" href="/admin/news">Spravovať</a></div>
+    <div class="card"><h3 style="margin:0">Galéria</h3><p style="font-size:34px;font-weight:900;margin:8px 0"><%= counts.gallery %></p><a class="btn btn-secondary" href="/admin/gallery">Spravovať</a></div>
+  </div>
+</div>
+</body>
+</html>
