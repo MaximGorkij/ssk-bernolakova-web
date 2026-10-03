@@ -28,6 +28,9 @@
         <div><label>Skóre – hostia</label><input type="number" name="awayScore" min="0"></div>
       </div>
 
+      <label>Komentár / strelci (voliteľné)</label>
+      <textarea name="comment" rows="3" placeholder="napr. Novák 3, Kováčová 2, Horváth 1"></textarea>
+
       <button class="btn" type="submit">Pridať zápas</button>
     </form>
   </div>
@@ -39,7 +42,7 @@
         <% matches.slice().sort((a,b)=> a.date < b.date ? 1 : -1).forEach(function(m) { %>
         <tr>
           <td><%= m.date %><% if (m.time) { %> <%= m.time %><% } %></td>
-          <td><%= m.homeTeam %> – <%= m.awayTeam %><% if (m.location) { %><br><small style="color:#68758a"><%= m.location %></small><% } %></td>
+          <td><%= m.homeTeam %> – <%= m.awayTeam %><% if (m.location) { %><br><small style="color:#68758a"><%= m.location %></small><% } %><% if (m.comment) { %><br><small style="color:#68758a;white-space:pre-line"><%= m.comment %></small><% } %></td>
           <td><span class="badge <%= m.status === 'finished' ? 'badge-finished' : 'badge-upcoming' %>"><%= m.status === 'finished' ? 'ODOHRANÝ' : 'NADCHÁDZAJÚCI' %></span></td>
           <td><%= m.status === 'finished' ? (m.homeScore + ' : ' + m.awayScore) : '—' %></td>
           <td class="row-actions">

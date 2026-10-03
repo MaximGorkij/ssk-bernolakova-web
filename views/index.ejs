@@ -85,6 +85,7 @@
         <div class="result-date"><%= parseDate(m.date) %></div>
         <div class="score"><%= m.homeScore %> : <%= m.awayScore %></div>
         <p><%= m.homeTeam %> – <%= m.awayTeam %></p>
+        <% if (m.comment) { %><p style="white-space:pre-line;font-size:13px;opacity:.85;margin-top:10px"><%= m.comment %></p><% } %>
       </div>
       <% }) %>
       <% upcomingList.forEach(function(m) { %>

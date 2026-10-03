@@ -28,6 +28,9 @@
         <div><label>Skóre – hostia</label><input type="number" name="awayScore" min="0" value="<%= match.awayScore === null || match.awayScore === undefined ? '' : match.awayScore %>"></div>
       </div>
 
+      <label>Komentár / strelci (voliteľné)</label>
+      <textarea name="comment" rows="5" placeholder="napr. Novák 3, Kováčová 2, Horváth 1"><%= match.comment || '' %></textarea>
+
       <button class="btn" type="submit">Uložiť zmeny</button>
       <a class="btn btn-secondary" href="/admin/matches">Zrušiť</a>
     </form>

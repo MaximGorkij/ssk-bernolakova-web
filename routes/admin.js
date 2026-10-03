@@ -177,11 +177,11 @@ router.get('/matches', requireAuth, (req, res) => {
 });
 
 router.post('/matches', requireAuth, (req, res) => {
-  const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore } = req.body;
+  const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore, comment } = req.body;
   const finished = status === 'finished';
   db.get('matches').push({
     id: nextId('matches'),
-    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location),
+    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location), comment: str(comment),
     status: finished ? 'finished' : 'upcoming',
     homeScore: finished ? toScore(homeScore) : null,
     awayScore: finished ? toScore(awayScore) : null
@@ -198,10 +198,10 @@ router.get('/matches/:id/edit', requireAuth, (req, res) => {
 router.post('/matches/:id', requireAuth, (req, res) => {
   const match = db.get('matches').find({ id: parseInt(req.params.id, 10) });
   if (!match.value()) return res.redirect('/admin/matches');
-  const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore } = req.body;
+  const { homeTeam, awayTeam, date, time, location, status, homeScore, awayScore, comment } = req.body;
   const finished = status === 'finished';
   match.assign({
-    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location),
+    homeTeam: str(homeTeam), awayTeam: str(awayTeam), date: str(date), time: str(time), location: str(location), comment: str(comment),
     status: finished ? 'finished' : 'upcoming',
     homeScore: finished ? toScore(homeScore) : null,
     awayScore: finished ? toScore(awayScore) : null
