@@ -1,0 +1,13 @@
+services:
+  ssk-bernolakova:
+    build: .
+    image: ssk-bernolakova-web:test
+    container_name: ssk-bernolakova-web
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads
