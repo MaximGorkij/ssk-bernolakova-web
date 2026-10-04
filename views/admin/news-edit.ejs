@@ -1,0 +1,36 @@
+<%- include('_head', { title: 'Upraviť novinku' }) %>
+<%- include('_nav') %>
+<div class="wrap">
+  <p style="margin:0 0 10px"><a href="/admin/news" style="color:#0b3778;font-weight:700;font-size:13px">← Späť na aktuality</a></p>
+  <h1>Upraviť novinku</h1>
+  <% if (saved) { %><div class="alert-ok">Uložené.</div><% } %>
+
+  <div class="card">
+    <form method="POST" action="/admin/news/<%= item.id %>" enctype="multipart/form-data">
+      <div class="grid-2">
+        <div><label>Dátum</label><input type="date" name="date" value="<%= item.date %>" required></div>
+        <div><label>Nadpis</label><input type="text" name="title" value="<%= item.title %>" required></div>
+      </div>
+      <label>Krátky text</label>
+      <textarea name="excerpt" required><%= item.excerpt %></textarea>
+
+      <label>Aktuálny obrázok</label>
+      <% if (item.image) { %>
+        <img src="<%= item.image %>" alt="" style="max-width:280px;max-height:180px;border-radius:8px;display:block;background:#eee">
+        <label style="text-transform:none;font-size:13px;font-weight:600;color:#111827;margin-top:10px"><input type="checkbox" name="removeImage" value="1" style="width:auto;margin-right:6px">Odstrániť obrázok</label>
+      <% } else { %>
+        <p style="color:#68758a;font-size:13px;margin:0">Novinka nemá obrázok.</p>
+      <% } %>
+
+      <label>Nahrať nový obrázok (nahradí súčasný)</label>
+      <input type="file" name="imageFile" accept="image/*">
+      <label>alebo URL obrázka</label>
+      <input type="url" name="imageUrl" value="<%= item.image && item.image.indexOf('/uploads/') !== 0 ? item.image : '' %>" placeholder="https://...">
+
+      <button class="btn" type="submit">Uložiť zmeny</button>
+      <a class="btn btn-secondary" href="/admin/news">Zrušiť</a>
+    </form>
+  </div>
+</div>
+</body>
+</html>

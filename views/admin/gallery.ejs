@@ -2,30 +2,41 @@
 <%- include('_nav') %>
 <div class="wrap">
   <h1>Galéria</h1>
-  <p style="color:#68758a;font-size:13px">Na úvodnej stránke sa zobrazuje prvých 5 fotiek.</p>
+  <p style="color:#68758a;font-size:13px">Na úvodnej stránke sa zobrazuje prvých 5 fotiek. Aktuálne fotiek: <strong><%= gallery.length %></strong>.</p>
+  <% if (added !== undefined) { %><div class="alert-ok">Pridané fotky: <%= added %>.</div><% } %>
+  <% if (deleted !== undefined) { %><div class="alert-ok">Zmazané fotky: <%= deleted %>.</div><% } %>
+  <% if (saved) { %><div class="alert-ok">Popis uložený.</div><% } %>
 
   <div class="card">
-    <h3 style="margin-top:0">Pridať fotku</h3>
+    <h3 style="margin-top:0">Pridať fotky do galérie</h3>
     <form method="POST" action="/admin/gallery" enctype="multipart/form-data">
-      <label>Nahrať súbor</label>
-      <input type="file" name="imageFile" accept="image/*">
+      <label>Nahrať súbory (môžete vybrať viac naraz, max 30 a 8 MB na fotku)</label>
+      <input type="file" name="imageFiles" accept="image/*" multiple>
       <label>alebo URL obrázka</label>
       <input type="url" name="imageUrl" placeholder="https://...">
-      <label>Popis (voliteľné)</label>
+      <label>Popis (voliteľné, použije sa pre všetky pridané fotky)</label>
       <input type="text" name="caption">
       <button class="btn" type="submit">Pridať</button>
     </form>
   </div>
 
   <div class="card">
+    <form id="bulkForm" method="POST" action="/admin/gallery/delete-selected" onsubmit="return confirm('Naozaj odstrániť všetky označené fotky?')"></form>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <label style="margin:0;text-transform:none;font-size:13px;font-weight:600;color:#111827"><input type="checkbox" style="width:auto;margin-right:6px" onclick="document.querySelectorAll('input[name=ids]').forEach(function(c){c.checked=this.checked}.bind(this))">Označiť všetky</label>
+      <button class="btn btn-danger" type="submit" form="bulkForm" style="margin-top:0;padding:7px 12px;font-size:12px">Zmazať označené</button>
+    </div>
     <table>
-      <thead><tr><th>Foto</th><th>Popis</th><th></th></tr></thead>
+      <thead><tr><th style="width:30px"></th><th>Foto</th><th>Popis</th><th></th></tr></thead>
       <tbody>
         <% gallery.forEach(function(g) { %>
         <tr>
+          <td><input type="checkbox" name="ids" value="<%= g.id %>" form="bulkForm" style="width:auto"></td>
           <td><img class="thumb" src="<%= g.image %>" alt=""></td>
-          <td><%= g.caption %></td>
-          <td class="row-actions">
+          <td><input type="text" name="caption" form="cf-<%= g.id %>" value="<%= g.caption || '' %>" placeholder="Popis"></td>
+          <td class="row-actions" style="white-space:nowrap">
+            <form id="cf-<%= g.id %>" method="POST" action="/admin/gallery/<%= g.id %>"></form>
+            <button class="btn" type="submit" form="cf-<%= g.id %>" style="margin-top:0;padding:6px 10px;font-size:11px">Uložiť</button>
             <form method="POST" action="/admin/gallery/<%= g.id %>/delete" onsubmit="return confirm('Naozaj odstrániť túto fotku?')">
               <button class="btn btn-danger" type="submit" style="margin-top:0;padding:6px 10px;font-size:11px">Zmazať</button>
             </form>
@@ -34,6 +45,7 @@
         <% }) %>
       </tbody>
     </table>
+    <% if (!gallery.length) { %><p style="color:#68758a;font-size:13px">Galéria je prázdna.</p><% } %>
   </div>
 </div>
 </body>

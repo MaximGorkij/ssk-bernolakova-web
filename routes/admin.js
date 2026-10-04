@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require('../db');
@@ -25,6 +27,16 @@ function toScore(v) {
 
 function findTeam(id) {
   return db.get('teams').find({ id: parseInt(id, 10) });
+}
+
+const UPLOADS_DIR = path.join(__dirname, '..', 'public', 'uploads');
+
+// Zmaze nahrany subor z disku (len v public/uploads, URL adresy ignoruje)
+function removeUploaded(imagePath) {
+  if (!imagePath || !String(imagePath).startsWith('/uploads/')) return;
+  const full = path.join(__dirname, '..', 'public', imagePath);
+  if (!full.startsWith(UPLOADS_DIR + path.sep)) return;
+  fs.unlink(full, () => {});
 }
 
 // ---------- LOGIN / LOGOUT ----------
@@ -222,34 +234,101 @@ router.get('/news', requireAuth, (req, res) => {
 
 router.post('/news', requireAuth, newsUpload.single('imageFile'), (req, res) => {
   const { date, title, excerpt, imageUrl } = req.body;
-  const image = req.file ? `/uploads/news/${req.file.filename}` : (imageUrl || '');
-  db.get('news').push({ id: nextId('news'), date, title, excerpt, image }).write();
+  const image = req.file ? `/uploads/news/${req.file.filename}` : str(imageUrl);
+  db.get('news').push({ id: nextId('news'), date: str(date), title: str(title), excerpt: str(excerpt), image }).write();
   res.redirect('/admin/news');
 });
 
+router.get('/news/:id/edit', requireAuth, (req, res) => {
+  const item = db.get('news').find({ id: parseInt(req.params.id, 10) }).value();
+  if (!item) return res.redirect('/admin/news');
+  res.render('admin/news-edit', { item, saved: req.query.saved });
+});
+
+router.post('/news/:id', requireAuth, newsUpload.single('imageFile'), (req, res) => {
+  const entry = db.get('news').find({ id: parseInt(req.params.id, 10) });
+  const old = entry.value();
+  if (!old) return res.redirect('/admin/news');
+  const { date, title, excerpt, imageUrl, removeImage } = req.body;
+  let image = old.image || '';
+  if (req.file) {
+    image = `/uploads/news/${req.file.filename}`;
+  } else if (removeImage === '1') {
+    image = '';
+  } else if (str(imageUrl)) {
+    image = str(imageUrl);
+  }
+  if (image !== (old.image || '')) removeUploaded(old.image);
+  entry.assign({ date: str(date), title: str(title), excerpt: str(excerpt), image }).write();
+  res.redirect(`/admin/news/${req.params.id}/edit?saved=1`);
+});
+
 router.post('/news/:id/delete', requireAuth, (req, res) => {
-  db.get('news').remove({ id: parseInt(req.params.id, 10) }).write();
+  const id = parseInt(req.params.id, 10);
+  const item = db.get('news').find({ id }).value();
+  if (item) removeUploaded(item.image);
+  db.get('news').remove({ id }).write();
   res.redirect('/admin/news');
 });
 
 // ---------- GALERIA ----------
 
 router.get('/gallery', requireAuth, (req, res) => {
-  res.render('admin/gallery', { gallery: db.get('gallery').value() });
+  res.render('admin/gallery', {
+    gallery: db.get('gallery').value(),
+    added: req.query.added,
+    deleted: req.query.deleted,
+    saved: req.query.saved
+  });
 });
 
-router.post('/gallery', requireAuth, galleryUpload.single('imageFile'), (req, res) => {
-  const { caption, imageUrl } = req.body;
-  const image = req.file ? `/uploads/gallery/${req.file.filename}` : (imageUrl || '');
-  if (image) {
-    db.get('gallery').push({ id: nextId('gallery'), image, caption: caption || '' }).write();
+// Pridanie fotiek do existujucej galerie: viac suborov naraz + volitelna URL
+router.post('/gallery', requireAuth, galleryUpload.array('imageFiles', 30), (req, res) => {
+  const caption = str(req.body.caption);
+  const url = str(req.body.imageUrl);
+  let added = 0;
+  (req.files || []).forEach((f) => {
+    db.get('gallery').push({ id: nextId('gallery'), image: `/uploads/gallery/${f.filename}`, caption }).write();
+    added += 1;
+  });
+  if (url) {
+    db.get('gallery').push({ id: nextId('gallery'), image: url, caption }).write();
+    added += 1;
   }
-  res.redirect('/admin/gallery');
+  res.redirect(`/admin/gallery?added=${added}`);
+});
+
+// Hromadne mazanie oznacenych fotiek (musi byt pred /gallery/:id)
+router.post('/gallery/delete-selected', requireAuth, (req, res) => {
+  let ids = req.body.ids || [];
+  if (!Array.isArray(ids)) ids = [ids];
+  ids = ids.map((i) => parseInt(i, 10)).filter((i) => !Number.isNaN(i));
+  let deleted = 0;
+  ids.forEach((id) => {
+    const g = db.get('gallery').find({ id }).value();
+    if (g) {
+      removeUploaded(g.image);
+      db.get('gallery').remove({ id }).write();
+      deleted += 1;
+    }
+  });
+  res.redirect(`/admin/gallery?deleted=${deleted}`);
+});
+
+router.post('/gallery/:id', requireAuth, (req, res) => {
+  const entry = db.get('gallery').find({ id: parseInt(req.params.id, 10) });
+  if (entry.value()) {
+    entry.assign({ caption: str(req.body.caption) }).write();
+  }
+  res.redirect('/admin/gallery?saved=1');
 });
 
 router.post('/gallery/:id/delete', requireAuth, (req, res) => {
-  db.get('gallery').remove({ id: parseInt(req.params.id, 10) }).write();
-  res.redirect('/admin/gallery');
+  const id = parseInt(req.params.id, 10);
+  const g = db.get('gallery').find({ id }).value();
+  if (g) removeUploaded(g.image);
+  db.get('gallery').remove({ id }).write();
+  res.redirect('/admin/gallery?deleted=1');
 });
 
 // ---------- ZMENA HESLA ----------
@@ -274,6 +353,16 @@ router.post('/password', requireAuth, (req, res) => {
 
   db.set('admin.passwordHash', bcrypt.hashSync(newPassword, 10)).write();
   res.redirect('/admin/password?saved=1');
+});
+
+// Chyby pri nahravani (velkost, typ suboru, pocet)
+router.use((err, req, res, next) => {
+  if (!err) return next();
+  const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Subor je prilis velky (max 8 MB).'
+    : (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT') ? 'Prilis vela suborov naraz (max 30).'
+    : String(err.message || 'Chyba pri nahravani.');
+  const safe = msg.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  res.status(400).send('<!DOCTYPE html><meta charset="UTF-8"><body style="font-family:Arial,sans-serif;padding:40px"><h2>Chyba</h2><p>' + safe + '</p><p><a href="javascript:history.back()">Spat</a></p></body>');
 });
 
 module.exports = router;
